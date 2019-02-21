@@ -5,4 +5,6 @@ class Player {
     this._pointsTotal = pointsTotal
     this._gameId = gameId
   }
+
+
 }

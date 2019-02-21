@@ -8,9 +8,9 @@ const quiz = (function(){
     const data = {},
     // game.questions
     questions = [
-      { question : 'Is  this question #1?', anwsers : [ 'Yes', 'No' ], right : 0 },
-      { question : 'Is  this question #2?', anwsers : [ 'Yes', 'No' ], right : 0 },
-      { question : 'Is  this question #3?', anwsers : [ 'Yes', 'No' ], right : 0 }
+      { id : 0, question : 'Is  this question #1?', anwsers : [ 'Yes', 'No' ], right : 0 },
+      { id : 1, question : 'Is  this question #2?', anwsers : [ 'Yes', 'No' ], right : 0 },
+      { id : 2, question : 'Is  this question #3?', anwsers : [ 'Yes', 'No' ], right : 0 }
     ],
     teams = [],
     players = [],
@@ -27,10 +27,14 @@ const quiz = (function(){
             players[ _player ] = player
           }
         }
-      }
+      },
       add = function( player ) {
-        player[ 'id' ] = players.length+1
-        players.push( player )
+        const _player = {
+          id : players.length+1,
+          name : player.name.value
+        }
+        players.push( _player )
+
       },
       score = function( player, score ){
         if( score ) {
@@ -48,13 +52,16 @@ const quiz = (function(){
     // game.question; display (random) question & anwsers
     const question = function(){
 
-      screen().set( '#question' ) // display question screen
+      screen().set( '_question' ) // display question screen
       const ask = ( anwser ) => { // display question with anwser as callback
 
         // TODO : get & display question & anwsers
         const _question = question().get() // get random question
+
         data[ 'question' ] = _question // save question to data
+
         screen().question( _question ) // display question
+
         screen().anwsers( _question ) // display anwsers
         anwser()  // TODO ; get the anwser & compare to _question.right; set player.score if right; display new question
       }
@@ -81,6 +88,7 @@ const quiz = (function(){
       },
       // screen.set; display a new screen
       set = function( screen, content ){
+        if(! screen.includes('#') ) screen = `#${screen}`
 
         if(content) {
           element( screen ).innerHTML =  content
@@ -90,9 +98,16 @@ const quiz = (function(){
         }
       },
       add = function( element, parent ){
-        element = document.createElement( element )
-        parent ? element( parent ).appendChild( element ) : element( 'section#screen').appendChild( element )
-        return element
+        console.log( parent )
+        const _element = document.createElement( element )
+        if(parent){
+          if(typeof parent === 'object'){
+            parent.appendChild( _element )
+          }else{
+            element( parent ).appendChild( _element )
+          }
+        }
+        return _element
       },
       // screen.question; display new question
       question = ( question ) =>{
@@ -105,9 +120,9 @@ const quiz = (function(){
         anwsers.id = question.id
         for( let anwser in question.anwsers ){
           // TODO : append anwsers elements
-          const anwser_ = add( 'anwser', anwsers )
-
+          const input = add( 'input', anwsers )
           input.id = anwser
+          input.class = 'anwser'
         }
       }
 
@@ -115,7 +130,8 @@ const quiz = (function(){
         main : main,
         element : element,
         set : set,
-        question : question
+        question : question,
+        anwsers : anwsers
       }
     }
     // game.session
@@ -150,18 +166,18 @@ const quiz = (function(){
     // game.action; UI element events
     const action = function( action, callback ){
       screen().element( `${action[0]}` ).addEventListener( action[1], (event) =>{
+        event.preventDefault()
         callback()
       })
     }
     // game.start; initiate new game
     const start = function(){
-        screen().set( '#start' )
+        screen().set( 'start' )
         // add new player
         action( ['button.add_player','click'] ,()=>{
 
           screen().set( 'add_player' )
           action( ['form.add_player','submit'] ,()=>{
-
             player().add( screen().element( 'form.add_player' ).elements )
             // start game session
             session().start()

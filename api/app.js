@@ -25,7 +25,7 @@ const api = (function(){
       database: ''
     },
     tables : [
-      // { table : 'reservations', key : 'id' },
+      // { table : 'tableName', key : 'id' },
 
     ]
   }

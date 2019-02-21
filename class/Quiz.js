@@ -5,7 +5,6 @@ class Quiz {
     this._questions = questions
 
   }
-  start(){
 
-  }
+  
 }
