@@ -75,4 +75,9 @@ const application = (function(){
 
     }
   })
+  return{
+    model : model,
+    view : view,
+    controller : controller
+  }
 })()
