@@ -98,7 +98,6 @@ const quiz = (function(){
         }
       },
       add = function( element, parent ){
-        console.log( parent )
         const _element = document.createElement( element )
         if(parent){
           if(typeof parent === 'object'){
@@ -120,7 +119,10 @@ const quiz = (function(){
         anwsers.id = question.id
         for( let anwser in question.anwsers ){
           // TODO : append anwsers elements
-          const input = add( 'input', anwsers )
+          const label = add( 'label', anwsers )
+          label.innerHTML = anwser
+          const input = add( 'input', label )
+          input.setAttribute( 'type', 'radio')
           input.id = anwser
           input.class = 'anwser'
         }

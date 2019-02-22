@@ -1,7 +1,7 @@
 class Game {
-  constructor( id, time, quizId ) {
+  constructor( id, time, players ) {
     this._id = id
     this._time = time
-    this._quizId = quizId
+    this._players = players
   }
 }
