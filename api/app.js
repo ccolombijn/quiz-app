@@ -24,7 +24,7 @@ const connection = mysql.createConnection( config.db )
 const get = function( args, callback ){
   const table = args.table,
   key = args.key
-  if( !key )
+
   if( key ){
     app.get( `/api/${table}/:${key}`, function( req, res ) {
 
@@ -61,5 +61,6 @@ const get = function( args, callback ){
   }
   if( callback ) callback()
 }
-
-get( { table : 'game' } )
+let server = app.listen(8081, () => {
+  get( {table: 'game'})
+});
