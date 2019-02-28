@@ -7,9 +7,7 @@ const api = (function(){
   const express = require( 'express' )
   const app = express()
   const bodyParser = require( 'body-parser' )
-  const server = app.listen(8081, function() {
-    console.log("API listening at http://%s:%s", server.address().address, server.address().port)
-  })
+
   app.use( bodyParser.json() )
   app.use( function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*")
@@ -25,17 +23,11 @@ const api = (function(){
       password: 'root',
       database: 'quiz'
     },
-    tables : {
-      { table : 'game', key : 'id' },
-      { table : 'quiz', key : 'id' },
-    }
+    routes : ['get/game','get/game/id' ]
   }
-  const connection = mysql.createConnection( config.db ),
+  const connection = mysql.createConnection( config.db )
 
-  // init
-  for( let table of config.tables ) {
-    for ( let action of Object.getOwnPropertyNames( api ) ) api[ action ]( table )
-  }
+
   /* -----------------------------------------------------------------------------
   * api.get
   */
@@ -155,16 +147,12 @@ const api = (function(){
   }
 
   const server = app.listen(8081, () => {
-    //get( {table: 'game'})
-    for( let endpoint of config.routes ){
-      endpoint = endpoint.endpoint.split( '/' )
-      if( endpoint[0] === 'get' ){
-        if( endpoint[2] ){
-          get( { table : endpoint[1], key : endpoint[2] } )
-        } else {
-          get( { table : endpoint[1] } )
-        }
-      }
+
+
+    for( let route of config.routes ){
+      const endpoint = route.split( '/' )
+      if( endpoint[0] === 'get' ) endpoint[2] ? get( { table : endpoint[1], key : endpoint[2] } ) : get( { table : endpoint[1] } )
+      
     }
   })
 
