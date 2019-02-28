@@ -1,83 +1,80 @@
-const application = (function(){
+const quiz = (function(){
+  model.data['questions'] = [ // questions data
+    { id : 1, question : 'What color are often the domes of churches in Russia?', anwsers : [ 'Gold', 'Silver', 'Bronze' ], right : 0 },
+    { id : 2, question : 'Which Italian artist painted the Birth of Venus?', anwsers : [ 'Leonardo Da Vinci', '	Botticelli', 'Carvaggio' ], right : 1 },
+    { id : 3, question : 'How many oscars did the Titanic movie got?', anwsers : [ '10', '11', '12', '13' ], right : 1 },
+    { id : 4, question : 'Who was the second president of the United States?', anwsers : [ 'Benjamin Franklin', 'George Whasington','John Quincy Adams', 'John Adams' ], right : 3 }
+  ]
+  model.data['players'] = []
+  model.data['game'] = { score : 0 }
 
-  // model
-  const model = (function(){
-   const data = {}
-   return {
-     data : data
-   }
-  })()
+  const questionsAsked = [],
+  start = () => askQuestion(),
+  end = () => view.set( 'quiz', `Quiz has finished with a score of ${model.data.game.score} out of ${model.data.questions.length} (${(model.data.game.score / model.data.questions.length) * 100}%)` ),
+  anwserQuestion = function( event ){
+    event.target.checked = true
+    const id = event.target.id.replace( 'anwser_', '' ),
+    question = getQuestion( event.target.parentElement.id.replace( 'anwsers_', '' ) ),
+    label = document.getElementById( `label_${id}` ),
+    anwser = ( parseInt( id ) === question.right ) ? 'right' : 'wrong'
+    if( anwser === 'right' ) model.data.game.score++
+    view.attr( label, { class : anwser } )
+    console.log( `Anwser to question #${questionsAsked.length} is ${anwser}`)
+    setTimeout( askQuestion, 3000 )
+  },
+  askQuestion = function(){
+      view.set( 'quiz', '')
+      if( questionsAsked.length === model.data.questions.length ) return end() // end if all questions are asked
+      let question = getQuestion()
+      view.add( 'quiz', 'h3', `Question ${questionsAsked.length}/${model.data.questions.length}`)
+      const questionElement = view.add( 'quiz', 'div', question.question)
+      const anwsersElement = view.add( 'quiz', 'form', { id : `anwsers_${question.id}`})
 
-  // view
-  const view = (function(){
-
-    const element = function( element ){
-
-      if( ! typeof element === 'object' ) {
-        if( element.contains( '.' ) ){
-          element = document.querySelectorAll( element )
-        } else {
-           if ( ! element.contains( '#' ) ) element = `#${element}`
-           element = document.querySelector( element )
-        }
+      for( let anwser in question.anwsers ){
+        controller.add(
+          view.add( anwsersElement, 'input', { type : 'radio', id : `anwser_${anwser}`, name : 'anwsers' } ),
+        'click', anwserQuestion )
+        //controller.add(
+          view.add( anwsersElement, 'label', { id : `label_${anwser}`, for : `anwser_${anwser}` }, question.anwsers[ anwser ] )
+        //, 'click', anwserQuestion )
       }
-      return element
+  },
+  getQuestion =  function( questionId ){
+    const selectId = questionId ? parseInt( questionId ) : getRandomInt( 1, model.data.questions.length )
+    if( !questionId ){
+      if( questionsAsked.includes( selectId ) ) return getQuestion()
     }
-
-    const set = function( name, content ){
-      if( typeof content === 'object' ) content = content.innerHTML
-      element( name ).innerHTML = content
-    }
-    const add = function( parent, element, attributes ){
-      parent = element( parent )
-      if( ! typeof element === 'object' ) element = document.createElement( element )
-      for( attribute of attributes ){
-         element.setAttribute( attribute.attr, attribute.val )
-      }
-      parent.appendChild( element )
-      return element
-    }
-
-    return {
-      element : element,
-      add : add,
-      set : set
-    }
-  })()
-
-  // controller
-  const controller = (function(){
-
-    const receptor = function( event ){
-      const component = event.target.id // id of element added to controller acts as trigger to component to receptor
-      const call = function( component ){
-        console.log( component )
+    for( let question of model.data.questions ){
+      if( question.id === selectId ) {
+        if( !questionId ) questionsAsked.push( question.id )
+        return question
       }
     }
-
-    const add = function( element, action, callback ){
-      element = view.element( element )
-      element.addEventListener( action, ( event ) => {
-        //receptor( event )
-        callback()
-      })
+  },
+  addPlayer = function(){
+    view.set( 'quiz', '')
+    view.add( 'quiz', 'h3', 'Add player' )
+    const addPlayerForm = view.add( 'quiz', 'form')
+    const playerName = view.add( addPlayerForm, 'input', { id : 'player_name'} )
+    view.add( addPlayerForm, 'button', 'Add Player' )
+    playerId = model.data.players.length+1
+    controller.add( addPlayerForm, 'submit', function(){
+        model.data.game[ 'playerId' ] = playerId
+        model.data.players.push({
+          id : playerId,
+          name : playerName.value,
+          score : 0
+        })
+        console.log(`Player ${getPlayer( playerId ).name} added`)
+        start()
+    })
+  },
+  getPlayer =  function( playerId ){
+    for( let player of model.data.players ){
+      if( player.id === playerId ) return player
     }
-
-    return {
-      add : add
-    }
-  })()
-
-
-
-  const quiz = (function(){
-    const init = function(){
-
-    }
-  })
-  return{
-    model : model,
-    view : view,
-    controller : controller
   }
+  
+  controller.add( view.add( 'quiz', 'button', 'New Game'), 'click', addPlayer )
+  const getRandomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min
 })()
