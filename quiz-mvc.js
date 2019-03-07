@@ -1,10 +1,26 @@
 const quiz = (function(){
-  model.data['questions'] = [ // questions data
-    { id : 1, question : 'What color are often the domes of churches in Russia?', anwsers : [ 'Gold', 'Silver', 'Bronze' ], right : 0 },
-    { id : 2, question : 'Which Italian artist painted the Birth of Venus?', anwsers : [ 'Leonardo Da Vinci', '	Botticelli', 'Carvaggio' ], right : 1 },
-    { id : 3, question : 'How many oscars did the Titanic movie got?', anwsers : [ '10', '11', '12', '13' ], right : 1 },
-    { id : 4, question : 'Who was the second president of the United States?', anwsers : [ 'Benjamin Franklin', 'George Whasington','John Quincy Adams', 'John Adams' ], right : 3 }
-  ]
+  model.apiRequest( { component : 'questions' },(event)=>{
+    model.apiRequest( { component : 'anwsers' },(event)=>{
+
+      let questions = model.data.questions;
+      let questions_arr = []
+      for(let question of model.data.questions){
+        let arr = []
+        let questionId = question.id;
+        for( let anwser of model.data.anwsers){
+
+          if(parseInt(anwser.question_id) === parseInt(questionId)) {
+
+            arr.push( anwser.anwser )
+          }
+        }
+        question.anwsers = arr;
+        questions_arr.push( question )
+      }
+    
+    });
+  });
+
   model.data['players'] = []
   model.data['game'] = { score : 0 }
 
@@ -16,7 +32,8 @@ const quiz = (function(){
     const id = event.target.id.replace( 'anwser_', '' ),
     question = getQuestion( event.target.parentElement.id.replace( 'anwsers_', '' ) ),
     label = document.getElementById( `label_${id}` ),
-    anwser = ( parseInt( id ) === question.right ) ? 'right' : 'wrong'
+    anwser = ( parseInt( id ) === parseInt(question.anwser) ) ? 'right' : 'wrong'
+
     if( anwser === 'right' ) model.data.game.score++
     view.attr( label, { class : anwser } )
     console.log( `Anwser to question #${questionsAsked.length} is ${anwser}`)
@@ -74,7 +91,7 @@ const quiz = (function(){
       if( player.id === playerId ) return player
     }
   }
-  
+
   controller.add( view.add( 'quiz', 'button', 'New Game'), 'click', addPlayer )
   const getRandomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min
 })()

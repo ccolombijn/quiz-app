@@ -23,7 +23,7 @@ const api = (function(){
       password: 'root',
       database: 'quiz'
     },
-    routes : ['get/game','get/game/id' ]
+    routes : ['get/game','get/game/:id','get/questions','get/questions/:id','get/anwsers' ]
   }
   const connection = mysql.createConnection( config.db )
 
@@ -152,7 +152,7 @@ const api = (function(){
     for( let route of config.routes ){
       const endpoint = route.split( '/' )
       if( endpoint[0] === 'get' ) endpoint[2] ? get( { table : endpoint[1], key : endpoint[2] } ) : get( { table : endpoint[1] } )
-      
+
     }
   })
 
