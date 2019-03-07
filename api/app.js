@@ -34,21 +34,28 @@ const api = (function(){
   */
   // api.get( { table : 'tables'[, key : 'id'] } )
 
-  app.get( `/api/questions/:key`, function( req, res ) {
+  app.get( `/api/questions/:id`, function( req, res ) {
 
-    let pointer = req.params[ 'key' ]
-    // bad request
-    // if( pointer.indexOf( '=' ) ){
-    //   res.setHeader('Content-Type', 'application/json')
-    //   res.status(400).end()
-    //   return
-    // }
-    pointer = +pointer;
-    connection.query(`SELECT * FROM questions where id=?`, pointer, ( err, rows ) => {
+    let id = +req.params[ 'id' ]
+
+    connection.query(`SELECT * FROM questions where id=?`, id, ( err, rows ) => {
       if (!err) {
         let record = rows[0];
         res.setHeader('Content-Type', 'application/json')
         record ? res.end(JSON.stringify( record ) ) : res.status(404).end()
+      } else {
+        throw err
+      }
+    })
+  });
+
+  app.get(`/api/questions`, function(req, res) {
+
+    res.setHeader('Content-Type', 'application/json')
+
+    connection.query(`SELECT * FROM questions`, ( err, records ) => {
+      if (!err) {
+        res.end( JSON.stringify(records) )
       } else {
         throw err
       }
