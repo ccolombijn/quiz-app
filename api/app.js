@@ -23,7 +23,8 @@ const api = (function(){
       password: 'root',
       database: 'quiz'
     },
-    routes : ['get/game','get/game/:id','get/questions','get/questions/:id','get/anwsers' ]
+    routes : [
+      'game','game/:id','questions','questions/:id','anwsers','anwsers/:id' ]
   }
   const connection = mysql.createConnection( config.db )
 
@@ -32,10 +33,33 @@ const api = (function(){
   * api.get
   */
   // api.get( { table : 'tables'[, key : 'id'] } )
+
+  app.get( `/api/questions/:key`, function( req, res ) {
+
+    let pointer = req.params[ 'key' ]
+    // bad request
+    // if( pointer.indexOf( '=' ) ){
+    //   res.setHeader('Content-Type', 'application/json')
+    //   res.status(400).end()
+    //   return
+    // }
+    pointer = +pointer;
+    connection.query(`SELECT * FROM questions where id=?`, pointer, ( err, rows ) => {
+      if (!err) {
+        let record = rows[0];
+        res.setHeader('Content-Type', 'application/json')
+        record ? res.end(JSON.stringify( record ) ) : res.status(404).end()
+      } else {
+        throw err
+      }
+    })
+  });
+
+
   const get = function( args, callback ){
     const table = args.table,
     key = args.key
-    if( !key )
+
     if( key ){
       app.get( `/api/${table}/:${key}`, function( req, res ) {
 
@@ -149,11 +173,13 @@ const api = (function(){
   const server = app.listen(8081, () => {
 
 
-    for( let route of config.routes ){
-      const endpoint = route.split( '/' )
-      if( endpoint[0] === 'get' ) endpoint[2] ? get( { table : endpoint[1], key : endpoint[2] } ) : get( { table : endpoint[1] } )
+    // for( let route of config.routes ){
+    //   //const endpoint = route.split( '/' )
+    //   //if( endpoint[0] === 'get' ) endpoint[2]
+    //   //? get( { table : endpoint[1], key : endpoint[2] } ) :
+    //   get( { table : endpoint[1] } );
 
-    }
+    // }
   })
 
 })()
