@@ -99,47 +99,47 @@ const api = (function(){
   * questions put
   */
 
-  app.put( `/api/questions/:id`, function( req, res ) {
+  app.put('/api/questions/:id', function(req, res) {
 
-    let id = +req.params[ 'id' ]
-    // bad request
-    if( pointer.indexOf( '=' ) ){
-      res.setHeader('Content-Type', 'application/json')
-      res.status(400).end()
-      return
-    }
+        // First read id from params
+        let id = +req.params.id
+        let body = req.body;
 
-    let body = req.body
-    let query = `UPDATE ${table} SET `
-    let query_fields = []
-    for( let field in fields ){
-      query += `${fields[field]} = ?`
-      if( field < fields.length ) query += ','
-      query_fields.push( body[ fields[ field ] ])
-    }
-    query += `WHERE ${key} = ?`
-    query_fields.push( pointer )
-    connection.query( query, query_fields, ( err, result ) => {
-      if (!err) {
-        connection.query(`SELECT * FROM ${table} where ${key}=?`, [ pointer ], ( err, rows ) => {
-          if (!err) {
-            let table = rows[0]
-            if (table) {
-              res.setHeader('Content-Type', 'application/json')
-              res.end(JSON.stringify(table))
-            } else {
-              res.setHeader('Content-Type', 'application/json')
-              res.status(404).end()
+
+        connection.query(
+          'UPDATE questions SET question=?, anwsers=?, anwser = ? Where id = ?',
+          [body.question, body.anwsers, body.anwser, id],
+          (err, result) => {
+            if (!err) {
+              console.log(`Changed ${result.changedRows} row(s)`);
+
+              // end of the update => send response
+              // execute a query to find the result of the update
+              connection.query('SELECT * FROM questions where id=?', [id], (err, rows) => {
+                if (!err) {
+                  console.log('Data received from Db:\n');
+
+                  let user = rows[0];
+
+                  console.log(user);
+                  if (user) {
+                    res.setHeader('Content-Type', 'application/json')
+                    res.end(JSON.stringify(user));
+                  } else {
+                    res.setHeader('Content-Type', 'application/json')
+                    console.log("Not found!!!");
+                    res.status(404).end(); // rloman send 404???
+                  }
+                } else {
+                  throw err;
+                }
+              });
             }
-          } else {
-            throw err
-          }
-        })
-      }else {
-        throw err
-      }
-    })
-  });
+            else {
+              throw err;
+            }
+      });
+});
 
 
 
@@ -226,47 +226,47 @@ const api = (function(){
     * anwsers put
   */
 
-    app.put( `/api/anwsers/:id`, function( req, res ) {
+  app.put('/api/anwsers/:id', function(req, res) {
 
-      let id = +req.params[ 'id' ]
-      // bad request
-      if( pointer.indexOf( '=' ) ){
-        res.setHeader('Content-Type', 'application/json')
-        res.status(400).end()
-        return
-      }
+        // First read id from params
+        let id = +req.params.id
+        let body = req.body;
 
-      let body = req.body
-      let query = `UPDATE ${table} SET `
-      let query_fields = []
-      for( let field in fields ){
-        query += `${fields[field]} = ?`
-        if( field < fields.length ) query += ','
-        query_fields.push( body[ fields[ field ] ])
-      }
-      query += `WHERE ${key} = ?`
-      query_fields.push( pointer )
-      connection.query( query, query_fields, ( err, result ) => {
-        if (!err) {
-          connection.query(`SELECT * FROM ${table} where ${key}=?`, [ pointer ], ( err, rows ) => {
+
+        connection.query(
+          'UPDATE anwsers SET anwser=? Where question_id = ?',
+          [body.anwser, id],
+          (err, result) => {
             if (!err) {
-              let table = rows[0]
-              if (table) {
-                res.setHeader('Content-Type', 'application/json')
-                res.end(JSON.stringify(table))
-              } else {
-                res.setHeader('Content-Type', 'application/json')
-                res.status(404).end()
-              }
-            } else {
-              throw err
+              console.log(`Changed ${result.changedRows} row(s)`);
+
+              // end of the update => send response
+              // execute a query to find the result of the update
+              connection.query('SELECT * FROM anwsers where question_id=?', [id], (err, rows) => {
+                if (!err) {
+                  console.log('Data received from Db:\n');
+
+                  let user = rows[0];
+
+                  console.log(user);
+                  if (user) {
+                    res.setHeader('Content-Type', 'application/json')
+                    res.end(JSON.stringify(user));
+                  } else {
+                    res.setHeader('Content-Type', 'application/json')
+                    console.log("Not found!!!");
+                    res.status(404).end(); // rloman send 404???
+                  }
+                } else {
+                  throw err;
+                }
+              });
             }
-          })
-        }else {
-          throw err
-        }
-      })
-    });
+            else {
+              throw err;
+            }
+      });
+});
 
 
 
@@ -356,49 +356,47 @@ const api = (function(){
         * game put
       */
 
-        app.put( `/api/game/:id`, function( req, res ) {
+        app.put('/api/game/:id', function(req, res) {
 
-          let id = +req.params[ 'id' ]
-          // bad request
-          if( pointer.indexOf( '=' ) ){
-            res.setHeader('Content-Type', 'application/json')
-            res.status(400).end()
-            return
-          }
+              // First read id from params
+              let id = +req.params.id
+              let body = req.body;
 
-          let body = req.body
-          let query = `UPDATE ${table} SET `
-          let query_fields = []
-          for( let field in fields ){
-            query += `${fields[field]} = ?`
-            if( field < fields.length ) query += ','
-            query_fields.push( body[ fields[ field ] ])
-          }
-          query += `WHERE ${key} = ?`
-          query_fields.push( pointer )
-          connection.query( query, query_fields, ( err, result ) => {
-            if (!err) {
-              connection.query(`SELECT * FROM ${table} where ${key}=?`, [ pointer ], ( err, rows ) => {
-                if (!err) {
-                  let table = rows[0]
-                  if (table) {
-                    res.setHeader('Content-Type', 'application/json')
-                    res.end(JSON.stringify(table))
-                  } else {
-                    res.setHeader('Content-Type', 'application/json')
-                    res.status(404).end()
+
+              connection.query(
+                'UPDATE game SET score=? Where id = ?',
+                [body.anwser, id],
+                (err, result) => {
+                  if (!err) {
+                    console.log(`Changed ${result.changedRows} row(s)`);
+
+                    // end of the update => send response
+                    // execute a query to find the result of the update
+                    connection.query('SELECT * FROM anwsers where id=?', [id], (err, rows) => {
+                      if (!err) {
+                        console.log('Data received from Db:\n');
+
+                        let user = rows[0];
+
+                        console.log(user);
+                        if (user) {
+                          res.setHeader('Content-Type', 'application/json')
+                          res.end(JSON.stringify(user));
+                        } else {
+                          res.setHeader('Content-Type', 'application/json')
+                          console.log("Not found!!!");
+                          res.status(404).end(); // rloman send 404???
+                        }
+                      } else {
+                        throw err;
+                      }
+                    });
                   }
-                } else {
-                  throw err
-                }
-              })
-            }else {
-              throw err
-            }
-          })
-        });
-
-
+                  else {
+                    throw err;
+                  }
+            });
+      });
 
       /* -----------------------------------------------------------------------------
         * game delete
@@ -417,25 +415,5 @@ const api = (function(){
         })
 
 
-
-
-
-
-
-
-
-
-
-  const server = app.listen(8081, () => {
-
-
-    // for( let route of config.routes ){
-    //   //const endpoint = route.split( '/' )
-    //   //if( endpoint[0] === 'get' ) endpoint[2]
-    //   //? get( { table : endpoint[1], key : endpoint[2] } ) :
-    //   get( { table : endpoint[1] } );
-
-    // }
-  })
 
 })()
