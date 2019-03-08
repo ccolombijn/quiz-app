@@ -29,7 +29,7 @@ const api = (function(){
 
     ]
   }
-  const connection = mysql.createConnection( config.db ),
+  const connection = mysql.createConnection( config.db );
 
   // init
   for( let table of config.tables ) {
