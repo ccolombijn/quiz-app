@@ -1,29 +1,58 @@
 const expect = require('chai').expect;
 
 
-describe('', function () {
+describe('quiz', function () {
+  /* ---------------------------------------------------------------------------
+  * class Model
+  */
+    it('class Model', function () {
+      const model = new Model
+      assert.typeOf(model, 'object');
+    }
+    // model.apiRequest
+    it('model.apiRequest', function () {
+      const model = new Model
+      const args = { component : 'test', data : 'value' }
+      const callback = ( event, args ) => assert.typeOf(model.data.test, 'object');
+      model.apiRequest( args, callback )
+    }
 
-    it('class Quiz', function () {
-        /*
-        // 1. ARRANGE
-        var x = 5;
-        var y = 1;
-        var sum1 = x + y;
-
-        // 2. ACT
-        var sum2 = addTwoNumbers(x, y);
-
-        // 3. ASSERT
-        expect(sum2).to.be.equal(sum1);
-        */
+    it('quiz.model', function () {
+      const model = quiz.model
+      assert.typeOf(model, 'object');
+    });
+  /* ---------------------------------------------------------------------------
+  * class View
+  */
+    it('class View', function () {
+      const model = new Model
+      const view = new View( model )
+      assert.typeOf(view, 'object');
+    });
+    // quiz.view
+    it('quiz.view', function () {
+      const view = quiz.view
+      assert.typeOf(view, 'object');
+    });
+    // quiz.view.DOM
+    it('quiz.view.DOM', function () {
+      const DOM = quiz.view.DOM
+      assert.typeOf(DOM, 'object');
+    });
+  /* ---------------------------------------------------------------------------
+  * class Controller
+  */
+    it('class Controller', function () {
+      const model = new Model
+      const view = new View( model )
+      const controller = new Controller( view, model )
+      assert.typeOf(controller, 'object');
     });
 
-    it('class Game', function () {
-    });
-
-    it('class Player', function () {
-    });
-
-    it('class Question', function () {
+    // quiz.controller
+    it('quiz.controller', function () {
+      const model = quiz.model()
+      const view = quiz.view()
+      const controller = quiz.controller( view, model )
     });
 });
