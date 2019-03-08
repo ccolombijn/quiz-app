@@ -14,7 +14,9 @@ const main = (function(){
     const name = 'My new Quiz'
     const id = 0
     const questions = data.questions
+    application.model.data = questions
     const quiz = new Quiz( name, id, questions )
     quiz.start()
+
   })
 })()
