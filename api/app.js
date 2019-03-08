@@ -26,8 +26,7 @@ const api = (function(){
     routes : [
       'game','game/:id','questions','questions/:id','anwsers','anwsers/:id' ]
   }
-  const connection = mysql.createConnection( config.db )
-
+  const connection = mysql.createConnection( config.db );
 
   /* -----------------------------------------------------------------------------
   * api.get
